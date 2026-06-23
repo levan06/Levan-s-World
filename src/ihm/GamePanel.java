@@ -5,58 +5,61 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-import javax.swing.Timer;
-import src.Controleur;
+import javax.swing.*;
+import src.Controller;
 
 public class GamePanel extends JPanel
 {
-    private Controleur    ctrl;
+    private Controller    ctrl;
 
-    private BufferedImage background;
-    private BufferedImage[] runFrames;
+    private BufferedImage   background;
+    private BufferedImage[] moveFramesArr;
+    private BufferedImage   imgEarth;
 
     private int currentFrame;
-    private int x = 100;
-    private int y = 100;
+    private int x;
+    private int y;
 
-    public GamePanel( Controleur ctrl )
+    public GamePanel( Controller ctrl )
     {
         this.setFocusable(true);
         this.ctrl = ctrl;
-        this.runFrames = new BufferedImage[10];
-        this.currentFrame = 0;
+
+        /*=======================*/
+        /* Create the components */
+        /*=======================*/
+        this.x = this.ctrl.getPlayerX();
+        this.y = this.ctrl.getPlayerY();
+
+        this.moveFramesArr = new BufferedImage[10];
+        this.currentFrame  = 0;
 
         try 
         {
             this.background = ImageIO.read(new File("./src/images/backgrounds/background_01.png"));
+            this.imgEarth   = ImageIO.read(new File("./src/images/tiles_objects/platform_26.png"));
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
         /**
-         * initialize the array of 
-         * running player images
+         * initialize the array of the player's
+         * state images
          */
-        try
-        {
-            for( int i = 0; i < this.runFrames.length; i++ )
-            {
-                String numFile = String.format( "%02d", i + 1 );
+        this.moveFramesArr = this.ctrl.initBufferedArr();
 
-                this.runFrames[i] = ImageIO.read(new File( 
-                    "./src/images/knight_run/run_" + numFile + ".png" )
-                );
-            }
-        }
-        catch( Exception e ) {
-            e.printStackTrace();
-        }
-
+        /**
+         * Animation with delays using javax.swing.Timer
+         */
         Timer timer = new Timer(120, e -> {
-            this.currentFrame = ( this.currentFrame + 1 ) % this.runFrames.length;
-            this.x += 5;
+            this.currentFrame = ( this.currentFrame + 1 ) % this.moveFramesArr.length;
+
+            // Verify if the player is running or walking
+            if( this.ctrl.getState().equals( "run" ) )
+                this.x += 7;
+            else if( this.ctrl.getState().equals( "walk" ) )
+                this.x += 3;
             repaint();
         });
         timer.start();
@@ -85,11 +88,14 @@ public class GamePanel extends JPanel
 		if ( this.background != null ) 
             g.drawImage(this.background, 0, 0, getWidth(), getHeight(), this);
 
+        /* Painting the earth */
+        g.drawImage( this.imgEarth, 0, getHeight() - 65, getWidth(), 100, this );
+        
         /* Painting each Running image of the player */
-        if( this.runFrames[ this.currentFrame ] != null )
+        if( this.moveFramesArr[ this.currentFrame ] != null )
         {
-            BufferedImage imgRun = this.runFrames[ this.currentFrame ];
-            g.drawImage( imgRun, this.x, this.y, 100, 100, this );
+            BufferedImage imgMove = this.moveFramesArr[ this.currentFrame ];
+            g.drawImage( imgMove, this.x, this.y, 100, 100, this );
         }
     }
 }

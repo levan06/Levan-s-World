@@ -1,13 +1,13 @@
 package src.ihm;
 
 import javax.swing.JFrame;
-import src.Controleur;
+import src.Controller;
 
 public class GameFrame extends JFrame
 {
-    private Controleur ctrl;
+    private Controller ctrl;
     
-    public GameFrame( Controleur ctrl )
+    public GameFrame( Controller ctrl )
     {
         this.ctrl = ctrl;
 
