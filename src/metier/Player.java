@@ -16,8 +16,8 @@ public class Player
     {
         this.ctrl  = ctrl;
         this.x     = 50;
-        this.y     = 400;
-        this.state = "idle";
+        this.y     = 560;
+        this.state = "run";
     }
 
     public int    getX()     { return this.x;     }
