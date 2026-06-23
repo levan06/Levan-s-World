@@ -16,6 +16,7 @@ public class GameFrame extends JFrame
 
         GamePanel panel = new GamePanel( this.ctrl );
         this.add( panel );
+        panel.requestFocusInWindow();
 
 
         this.setVisible( true );
