@@ -11,19 +11,16 @@ public class Controller
 
     private Player     player;
     private PlayerMove playerMove;
-    
-    private String state;
 
     /* Constructor */
     public Controller()
     {
         this.player     = new Player    ( this );
         this.playerMove = new PlayerMove( this, player );
-        this.state      = this.player.getState();
         this.ihm        = new GameFrame ( this );
     }
 
-    public BufferedImage[] initBufferedArr() { return this.playerMove.initBufferedArr( this.state ); }
+    public BufferedImage[] initBufferedArr() { return this.playerMove.initBufferedArr( this.player.getState() ); }
 
     /* ============*/
     /*   Getters   */
