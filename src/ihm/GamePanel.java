@@ -17,9 +17,16 @@ public class GamePanel extends JPanel
     private BufferedImage   background;
     private BufferedImage[] moveFramesArr;
 
+    private Timer animationTimer;
+
     private int currentFrame;
     private int x;
     private int y;
+
+    private boolean rightPressed = false;
+    private boolean leftPressed  = false;
+    private boolean shiftPressed = false;
+    private boolean playerJumped = false;
 
     public GamePanel( Controller ctrl )
     {
@@ -43,41 +50,130 @@ public class GamePanel extends JPanel
             e.printStackTrace();
         }
 
-        /**
-         * initialize the array of the player's
-         * state images
-         */
+
+        /* initialize the array of the player's state images*/
         this.moveFramesArr = this.ctrl.initBufferedArr();
+        startAnimation();
 
         /**
-         * Animation with delays using javax.swing.Timer
-         */
-        Timer timer = new Timer(120, e -> {
-            this.currentFrame = ( this.currentFrame + 1 ) % this.moveFramesArr.length;
-
-            // Verify if the player is running or walking
-            if( this.ctrl.getState().equals( "run" ) )
-                this.x += 7;
-            else if( this.ctrl.getState().equals( "walk" ) )
-                this.x += 3;
-            repaint();
-        });
-        timer.start();
-
-        /**
-         * Method to verify wich
-         * keyboard button was clicked
+         * Method to manage Keyboard clicks
          */
         this.addKeyListener(new KeyAdapter() 
         {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_D) {
-                    System.out.println("D pressed");
+                if( e.getKeyCode() != KeyEvent.VK_SPACE )
+                {
+                    if (e.getKeyCode() == KeyEvent.VK_D)     rightPressed = true;
+                    if (e.getKeyCode() == KeyEvent.VK_Q)     leftPressed  = true;
+                    if (e.getKeyCode() == KeyEvent.VK_SHIFT) shiftPressed = true;
+
+                    updatePlayerState();
                 }
+
+                if (e.getKeyCode() == KeyEvent.VK_SPACE)
+                {
+                    ctrl.setState( "jump" );
+                    System.out.println("Space Pressed");
+                    startAnimation();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) 
+            {
+                if( e.getKeyCode() != KeyEvent.VK_SPACE )
+                {
+                    if (e.getKeyCode() == KeyEvent.VK_D)     rightPressed = false;
+                    if (e.getKeyCode() == KeyEvent.VK_Q)     leftPressed  = false;
+                    if (e.getKeyCode() == KeyEvent.VK_SHIFT) shiftPressed = false;
+
+                    updatePlayerState();
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_SPACE)
+                {
+                    System.out.println("Space Released");
+                } 
             }
         });
     }
+
+
+    /**
+     * Private Method called after each 
+     * click on the keyboard
+     */
+    private void updatePlayerState()
+    {
+        String newState;
+    
+        if (this.rightPressed || this.leftPressed)
+        {
+            if (this.shiftPressed)
+                newState = "run";
+            else
+                newState = "walk";
+        }
+        else
+        {
+            newState = "idle";
+        }
+    
+        if (!this.ctrl.getState().equals(newState))
+        {
+            this.ctrl.setState(newState);
+            startAnimation();
+        }
+    }
+
+    /**
+     * Private method called when the player
+     * change direction or movement
+     */
+    private void startAnimation()
+    {
+        this.moveFramesArr = this.ctrl.initBufferedArr();
+        this.currentFrame = 0;
+
+        if( this.animationTimer != null )
+            this.animationTimer.stop();
+
+        /*Animation with delays using javax.swing.Timer*/
+        this.animationTimer = new Timer(100, e -> 
+        {
+            /* Making sure currentFrame isn't out of array-s length */
+            if( this.currentFrame == this.moveFramesArr.length - 1 )
+            {
+                /* if the player Jumpes we animate it one time and reset to idle */
+                if( this.ctrl.getState().equals( "jump" ) )
+                {
+                    this.ctrl.setState( "idle" );
+                    animationTimer.stop();
+                    this.startAnimation();
+                }
+                
+                this.currentFrame = 0;
+            }
+
+            // Verify if the player is running or walking
+            if( this.ctrl.getState().equals( "run" ) )
+            {
+                if( this.rightPressed && this.shiftPressed ) this.x += 10;
+                if( this.leftPressed  && this.shiftPressed ) this.x -= 7;
+            }
+            else if( this.ctrl.getState().equals( "walk" ) )
+            {
+                if( this.rightPressed ) this.x += 3;
+                if( this.leftPressed  ) this.x -= 3;
+            }
+
+            this.currentFrame++;
+            repaint();
+        });
+        this.animationTimer.start();
+    }
+
 
     /**
      * Private helper method
@@ -103,6 +199,7 @@ public class GamePanel extends JPanel
         return lstGameObjects;
     }
 
+
     @Override
     protected void paintComponent( Graphics g )
     {
@@ -111,6 +208,7 @@ public class GamePanel extends JPanel
         /* Painting the Background Image */
 		if ( this.background != null ) 
             g.drawImage(this.background, 0, 0, getWidth(), getHeight(), this);
+
 
         /*====================*/
         /* Painting the earth */
@@ -123,12 +221,19 @@ public class GamePanel extends JPanel
             g.drawImage( gameObj.getImg(), gameObj.getX(), gameObj.getY(), gameObj.getWidth(), gameObj.getHeight(), this );
         }
 
-        
-        /* Painting each Running image of the player */
+
+        /*=====================*/
+        /* Painting the Player */
+        /*=====================*/
         if( this.moveFramesArr[ this.currentFrame ] != null )
         {
             BufferedImage imgMove = this.moveFramesArr[ this.currentFrame ];
-            g.drawImage( imgMove, this.x, this.y, 100, 100, this );
+            
+            /* If the player is out of the window */
+            if( this.x <= 0   ) this.x = 0;   // (left side)
+            if( this.x >= 640 ) this.x = 640; // (right side)
+
+            g.drawImage( imgMove, this.x, this.y, 110, 110, this );
         }
     }
 }
