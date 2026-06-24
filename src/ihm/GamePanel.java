@@ -4,9 +4,11 @@ import java.awt.Graphics;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import src.Controller;
+import src.metier.GameObject;
 
 public class GamePanel extends JPanel
 {
@@ -14,7 +16,6 @@ public class GamePanel extends JPanel
 
     private BufferedImage   background;
     private BufferedImage[] moveFramesArr;
-    private BufferedImage   imgEarth;
 
     private int currentFrame;
     private int x;
@@ -37,7 +38,6 @@ public class GamePanel extends JPanel
         try 
         {
             this.background = ImageIO.read(new File("./src/images/backgrounds/background_01.png"));
-            this.imgEarth   = ImageIO.read(new File("./src/images/tiles_objects/platform_26.png"));
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -79,6 +79,30 @@ public class GamePanel extends JPanel
         });
     }
 
+    /**
+     * Private helper method
+     * @return List of GameObjet wich contains
+     * img, x, y, width and height
+     */
+    private ArrayList<GameObject> drawEarth()
+    {
+        ArrayList lstGameObjects = new ArrayList<GameObject>();
+
+        try 
+        {
+            BufferedImage imgEarth   = ImageIO.read(new File("./src/images/tiles_objects/platform_26.png"));
+
+            lstGameObjects.add( new GameObject( imgEarth,   0, 650, 250, 100 ) );
+            lstGameObjects.add( new GameObject( imgEarth, 520, 650, 250, 100 ) );
+            lstGameObjects.add( new GameObject( imgEarth, 250, 650, 270, 100 ) );
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lstGameObjects;
+    }
+
     @Override
     protected void paintComponent( Graphics g )
     {
@@ -88,8 +112,17 @@ public class GamePanel extends JPanel
 		if ( this.background != null ) 
             g.drawImage(this.background, 0, 0, getWidth(), getHeight(), this);
 
+        /*====================*/
         /* Painting the earth */
-        g.drawImage( this.imgEarth, 0, getHeight() - 65, getWidth(), 100, this );
+        /*====================*/
+        ArrayList lstEarth = this.drawEarth();
+        
+        for( Object obj : lstEarth )
+        {
+            GameObject gameObj = (GameObject) obj;
+            g.drawImage( gameObj.getImg(), gameObj.getX(), gameObj.getY(), gameObj.getWidth(), gameObj.getHeight(), this );
+        }
+
         
         /* Painting each Running image of the player */
         if( this.moveFramesArr[ this.currentFrame ] != null )
