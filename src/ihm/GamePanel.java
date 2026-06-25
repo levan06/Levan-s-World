@@ -140,7 +140,7 @@ public class GamePanel extends JPanel
             this.animationTimer.stop();
 
         /*Animation with delays using javax.swing.Timer*/
-        this.animationTimer = new Timer(100, e -> 
+        this.animationTimer = new Timer(120, e -> 
         {
             /* Making sure currentFrame isn't out of array-s length */
             if( this.currentFrame == this.moveFramesArr.length - 1 )
@@ -156,7 +156,7 @@ public class GamePanel extends JPanel
                 this.currentFrame = 0;
             }
 
-            // Verify if the player is running or walking
+            // Verify if the player's state (movement)
             if( this.ctrl.getState().equals( "run" ) )
             {
                 if( this.rightPressed && this.shiftPressed ) this.x += 10;
@@ -166,6 +166,17 @@ public class GamePanel extends JPanel
             {
                 if( this.rightPressed ) this.x += 3;
                 if( this.leftPressed  ) this.x -= 3;
+            }
+            else if( this.ctrl.getState().equals( "jump" ) )
+            {
+                if( this.currentFrame >= ( this.moveFramesArr.length / 2 ) - 1 )
+                {
+                    this.y += 5; 
+                }
+                else
+                {
+                    this.y -= 5;
+                }
             }
 
             this.currentFrame++;
