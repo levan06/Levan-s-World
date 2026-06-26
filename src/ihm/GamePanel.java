@@ -193,7 +193,7 @@ public class GamePanel extends JPanel
      */
     private ArrayList<GameObject> drawEarth()
     {
-        ArrayList lstGameObjects = new ArrayList<GameObject>();
+        ArrayList<GameObject> lstGameObjects = new ArrayList<GameObject>();
 
         try 
         {
@@ -224,7 +224,7 @@ public class GamePanel extends JPanel
         /*====================*/
         /* Painting the earth */
         /*====================*/
-        ArrayList lstEarth = this.drawEarth();
+        ArrayList<GameObject> lstEarth = this.drawEarth();
         
         for( Object obj : lstEarth )
         {
