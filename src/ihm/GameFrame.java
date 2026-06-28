@@ -13,10 +13,10 @@ public class GameFrame extends JFrame
         this.ctrl = ctrl;
 
         this.setTitle("Levan's World !");
-        this.setSize(750, 750);
+        this.setSize(1200, 800);
 
         this.setResizable(false);
-        this.setLocation( 700, 100);
+        this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         GamePanel panel = new GamePanel(this.ctrl);
