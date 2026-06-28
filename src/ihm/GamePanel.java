@@ -202,7 +202,7 @@ public class GamePanel extends JPanel
 
     /**
      * Private helper method
-     * @return List of GameObjet wich contains
+     * @return List of GameObjet (earth) wich contains
      * img, x, y, width and height
      */
     private ArrayList<GameObject> drawEarth()
@@ -257,7 +257,7 @@ public class GamePanel extends JPanel
 
     /**
      * Private helper method
-     * @return List of GameObjet wich contains
+     * @return List of GameObjet (decor) wich contains
      * img, x, y, width and height
      */
     private ArrayList<GameObject> drawDecor()
@@ -268,7 +268,7 @@ public class GamePanel extends JPanel
         {
             BufferedImage imgHouse = ImageIO.read( new File( "./src/images/decor/house.png" ) );
 
-            lstGameObjects.add( new GameObject( imgHouse, x, y, WIDTH, HEIGHT ) );
+            lstGameObjects.add( new GameObject( imgHouse, 900, 371, 300, 200 ) );
         }
         catch (Exception e) {
             e.printStackTrace();
