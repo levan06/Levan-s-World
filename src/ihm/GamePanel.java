@@ -26,8 +26,7 @@ public class GamePanel extends JPanel
     private boolean rightPressed = false;
     private boolean leftPressed  = false;
     private boolean shiftPressed = false;
-    private boolean playerJumped = false;
-
+    
     public GamePanel( Controller ctrl )
     {
         this.setFocusable(true);
@@ -62,7 +61,8 @@ public class GamePanel extends JPanel
         {
             @Override
             public void keyPressed(KeyEvent e) {
-                if( e.getKeyCode() != KeyEvent.VK_SPACE )
+                if( e.getKeyCode() != KeyEvent.VK_SPACE &&
+                    e.getKeyCode() != KeyEvent.VK_F )
                 {
                     if (e.getKeyCode() == KeyEvent.VK_D)     rightPressed = true;
                     if (e.getKeyCode() == KeyEvent.VK_Q)     leftPressed  = true;
@@ -77,12 +77,20 @@ public class GamePanel extends JPanel
                     System.out.println("Space Pressed");
                     startAnimation();
                 }
+
+                if( e.getKeyCode() == KeyEvent.VK_F )
+                {
+                    ctrl.setState( "attack" );
+                    System.out.println("Attack Pressed");
+                    startAnimation();
+                }
             }
 
             @Override
             public void keyReleased(KeyEvent e) 
             {
-                if( e.getKeyCode() != KeyEvent.VK_SPACE )
+                if( e.getKeyCode() != KeyEvent.VK_SPACE &&
+                    e.getKeyCode() != KeyEvent.VK_F )
                 {
                     if (e.getKeyCode() == KeyEvent.VK_D)     rightPressed = false;
                     if (e.getKeyCode() == KeyEvent.VK_Q)     leftPressed  = false;
@@ -94,6 +102,11 @@ public class GamePanel extends JPanel
                 if (e.getKeyCode() == KeyEvent.VK_SPACE)
                 {
                     System.out.println("Space Released");
+                } 
+
+                if (e.getKeyCode() == KeyEvent.VK_F)
+                {
+                    System.out.println("Attack Released");
                 } 
             }
         });
@@ -140,13 +153,14 @@ public class GamePanel extends JPanel
             this.animationTimer.stop();
 
         /*Animation with delays using javax.swing.Timer*/
-        this.animationTimer = new Timer(100, e -> 
+        this.animationTimer = new Timer(110, e -> 
         {
             /* Making sure currentFrame isn't out of array-s length */
             if( this.currentFrame == this.moveFramesArr.length - 1 )
             {
-                /* if the player Jumpes we animate it one time and reset to idle */
-                if( this.ctrl.getState().equals( "jump" ) )
+                /* if the player Jumpes or attacks we animate it one time and reset to idle */
+                if( this.ctrl.getState().equals( "jump"   ) ||
+                    this.ctrl.getState().equals( "attack" ) )
                 {
                     this.ctrl.setState( "idle" );
                     animationTimer.stop();
@@ -156,16 +170,27 @@ public class GamePanel extends JPanel
                 this.currentFrame = 0;
             }
 
-            // Verify if the player is running or walking
+            // Verify if the player's state (movement)
             if( this.ctrl.getState().equals( "run" ) )
             {
-                if( this.rightPressed && this.shiftPressed ) this.x += 10;
+                if( this.rightPressed && this.shiftPressed ) this.x += 15;
                 if( this.leftPressed  && this.shiftPressed ) this.x -= 7;
             }
             else if( this.ctrl.getState().equals( "walk" ) )
             {
                 if( this.rightPressed ) this.x += 3;
                 if( this.leftPressed  ) this.x -= 3;
+            }
+            else if( this.ctrl.getState().equals( "jump" ) )
+            {
+                if( this.currentFrame >= ( this.moveFramesArr.length / 2 ) - 1 )
+                {
+                    this.y += 5; 
+                }
+                else 
+                {
+                    this.y -= 5;
+                }
             }
 
             this.currentFrame++;
@@ -177,20 +202,73 @@ public class GamePanel extends JPanel
 
     /**
      * Private helper method
-     * @return List of GameObjet wich contains
+     * @return List of GameObjet (earth) wich contains
      * img, x, y, width and height
      */
     private ArrayList<GameObject> drawEarth()
     {
-        ArrayList lstGameObjects = new ArrayList<GameObject>();
+        ArrayList<GameObject> lstGameObjects = new ArrayList<GameObject>();
 
         try 
         {
-            BufferedImage imgEarth   = ImageIO.read(new File("./src/images/tiles_objects/platform_26.png"));
+            BufferedImage imgEarth           = ImageIO.read( new File( "./src/images/tiles_objects/platform_35.png" ) );
+            BufferedImage imgLowerEarth      = ImageIO.read( new File( "./src/images/tiles_objects/platform_30.png" ) );
+            BufferedImage imgUpperLeftEarth  = ImageIO.read( new File( "./src/images/tiles_objects/platform_29.png" ) );
+            BufferedImage imgUpperRightEarth = ImageIO.read( new File( "./src/images/tiles_objects/platform_31.png" ) );
+            BufferedImage rightInclined      = ImageIO.read( new File( "./src/images/tiles_objects/platform_25.png" ) );
+            BufferedImage leftInclined       = ImageIO.read( new File( "./src/images/tiles_objects/platform_27.png" ) );
+            BufferedImage leftUpperCliff     = ImageIO.read( new File( "./src/images/tiles_objects/platform_32.png" ) );
+            BufferedImage rightUppertCliff   = ImageIO.read( new File( "./src/images/tiles_objects/platform_34.png" ) );         
+            BufferedImage leftLowerCliff     = ImageIO.read( new File( "./src/images/tiles_objects/platform_37.png" ) );
+            BufferedImage rightLowertCliff   = ImageIO.read( new File( "./src/images/tiles_objects/platform_33.png" ) );
 
-            lstGameObjects.add( new GameObject( imgEarth,   0, 650, 250, 100 ) );
-            lstGameObjects.add( new GameObject( imgEarth, 520, 650, 250, 100 ) );
-            lstGameObjects.add( new GameObject( imgEarth, 250, 650, 270, 100 ) );
+            // Upper Layer of earth
+            lstGameObjects.add( new GameObject( imgUpperLeftEarth,     0, 570, 100, 100 ) );
+            lstGameObjects.add( new GameObject( imgUpperRightEarth,  200, 570, 100, 100 ) );
+            lstGameObjects.add( new GameObject( imgEarth,            100, 470, 100, 100 ) );
+            lstGameObjects.add( new GameObject( imgEarth,            300, 570, 100, 100 ) );
+            lstGameObjects.add( new GameObject( imgEarth,            700, 570, 100, 100 ) );
+            lstGameObjects.add( new GameObject( imgEarth,            800, 570, 100, 100 ) );
+            lstGameObjects.add( new GameObject( imgEarth,            900, 570, 100, 100 ) );
+            lstGameObjects.add( new GameObject( imgEarth,           1000, 570, 100, 100 ) );
+            lstGameObjects.add( new GameObject( imgEarth,           1100, 570, 100, 100 ) );
+            lstGameObjects.add( new GameObject( leftUpperCliff,      400, 570, 100, 100 ) );
+            lstGameObjects.add( new GameObject( rightUppertCliff,    600, 570, 100, 100 ) );
+
+            // Lower layer of earth
+            lstGameObjects.add( new GameObject( imgLowerEarth,   0, 655, 400, 200 ) );
+            lstGameObjects.add( new GameObject( imgLowerEarth,   700, 655, 500, 200 ) );
+            lstGameObjects.add( new GameObject( imgLowerEarth, 100, 555, 100, 100 ) );
+
+            // Cliffs
+            lstGameObjects.add( new GameObject( leftLowerCliff,   400, 660, 100, 110 ) );
+            lstGameObjects.add( new GameObject( rightLowertCliff, 600, 660, 100, 110 ) );
+
+            // Right inclined hill
+            lstGameObjects.add( new GameObject( rightInclined,     0, 470, 100, 100 ) );
+            lstGameObjects.add( new GameObject( leftInclined,    200, 470, 100, 100 ) );
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lstGameObjects;
+    }
+
+    /**
+     * Private helper method
+     * @return List of GameObjet (decor) wich contains
+     * img, x, y, width and height
+     */
+    private ArrayList<GameObject> drawDecor()
+    {
+        ArrayList<GameObject> lstGameObjects = new ArrayList<GameObject>();
+
+        try 
+        {
+            BufferedImage imgHouse = ImageIO.read( new File( "./src/images/decor/house.png" ) );
+
+            lstGameObjects.add( new GameObject( imgHouse, 900, 371, 300, 200 ) );
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -213,11 +291,22 @@ public class GamePanel extends JPanel
         /*====================*/
         /* Painting the earth */
         /*====================*/
-        ArrayList lstEarth = this.drawEarth();
+        ArrayList<GameObject> lstEarth = this.drawEarth();
         
-        for( Object obj : lstEarth )
+        for( GameObject obj : lstEarth )
         {
-            GameObject gameObj = (GameObject) obj;
+            GameObject gameObj = obj;
+            g.drawImage( gameObj.getImg(), gameObj.getX(), gameObj.getY(), gameObj.getWidth(), gameObj.getHeight(), this );
+        }
+
+        /*====================*/
+        /* Painting the decor */
+        /*====================*/
+        ArrayList<GameObject> lstDecor = this.drawDecor();
+        
+        for( GameObject obj : lstDecor )
+        {
+            GameObject gameObj = obj;
             g.drawImage( gameObj.getImg(), gameObj.getX(), gameObj.getY(), gameObj.getWidth(), gameObj.getHeight(), this );
         }
 
