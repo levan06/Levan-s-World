@@ -10,10 +10,7 @@ import src.metier.GameObject;
 
 public class DrawObjet 
 {
-    public DrawObjet()
-    {
-
-    }
+    public DrawObjet() {}
 
     /**
      * Private helper method
@@ -52,7 +49,7 @@ public class DrawObjet
 
             // Lower layer of earth
             lstGameObjects.add( new GameObject( imgLowerEarth,   0, 655, 400, 200 ) );
-            lstGameObjects.add( new GameObject( imgLowerEarth,   700, 655, 500, 200 ) );
+            lstGameObjects.add( new GameObject( imgLowerEarth, 700, 655, 500, 200 ) );
             lstGameObjects.add( new GameObject( imgLowerEarth, 100, 555, 100, 100 ) );
 
             // Cliffs
@@ -62,6 +59,31 @@ public class DrawObjet
             // Right inclined hill
             lstGameObjects.add( new GameObject( rightInclined,     0, 470, 100, 100 ) );
             lstGameObjects.add( new GameObject( leftInclined,    200, 470, 100, 100 ) );
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lstGameObjects;
+    }
+
+    
+    /**
+     * Private helper method
+     * @return List of GameObjet (earth) wich contains
+     * img, x, y, width and height
+     */
+    public ArrayList<GameObject> drawPlatform()
+    {
+        ArrayList<GameObject> lstGameObjects = new ArrayList<GameObject>();
+
+        try 
+        {
+            BufferedImage imgLowerEarth = ImageIO.read( new File( "./src/images/tiles_objects/platform_41.png" ) );
+
+            // Upper Layer of earth
+            lstGameObjects.add( new GameObject( imgLowerEarth,  620, 370, 200, 200 ) );
+
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -82,9 +104,26 @@ public class DrawObjet
 
         try 
         {
-            BufferedImage imgHouse = ImageIO.read( new File( "./src/images/decor/house.png" ) );
+            BufferedImage imgHouse  = ImageIO.read( new File( "./src/images/decor/house.png"   ) );
+            BufferedImage imgTree1  = ImageIO.read( new File( "./src/images/decor/tree_01.png" ) );
+            BufferedImage imgTree2  = ImageIO.read( new File( "./src/images/decor/tree_02.png" ) );
+            BufferedImage imgLadder = ImageIO.read( new File( "./src/images/decor/ladder.png"  ) );
 
+
+
+            // Drawing the trees
+            lstGameObjects.add( new GameObject( imgTree1,  300, 270, 200, 300 ) );
+            lstGameObjects.add( new GameObject( imgTree2,  800, 370, 200, 200 ) );
+            lstGameObjects.add( new GameObject( imgTree2,  900, 270, 200, 300 ) );
+            lstGameObjects.add( new GameObject( imgTree2, 1000, 270, 200, 300 ) );
+
+            // Drawing the house
             lstGameObjects.add( new GameObject( imgHouse, 900, 371, 300, 200 ) );
+
+            // Drawing the ladders
+            lstGameObjects.add( new GameObject( imgLadder,  670, 475, 100, 100 ) );
+            lstGameObjects.add( new GameObject( imgLadder,  670, 390, 100, 100 ) );
+
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -92,6 +131,5 @@ public class DrawObjet
 
         return lstGameObjects;
     }
-
 
 }

@@ -24,9 +24,11 @@ public class GamePanel extends JPanel
     private int x;
     private int y;
 
-    private boolean rightPressed = false;
-    private boolean leftPressed  = false;
-    private boolean shiftPressed = false;
+    private boolean rightPressed  = false;
+    private boolean leftPressed   = false;
+    private boolean shiftPressed  = false;
+    private boolean isFacingRight = false;
+    private boolean isClimbing    = false;
     
     public GamePanel( Controller ctrl )
     {
@@ -66,8 +68,16 @@ public class GamePanel extends JPanel
                 if( e.getKeyCode() != KeyEvent.VK_SPACE &&
                     e.getKeyCode() != KeyEvent.VK_F )
                 {
-                    if (e.getKeyCode() == KeyEvent.VK_D)     rightPressed = true;
-                    if (e.getKeyCode() == KeyEvent.VK_Q)     leftPressed  = true;
+                    if (e.getKeyCode() == KeyEvent.VK_D)
+                    {
+                        rightPressed  = true;
+                        isFacingRight = true;
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_Q)
+                    {
+                        leftPressed   = true;
+                        isFacingRight = false;
+                    }
                     if (e.getKeyCode() == KeyEvent.VK_SHIFT) shiftPressed = true;
 
                     updatePlayerState();
@@ -76,14 +86,19 @@ public class GamePanel extends JPanel
                 if (e.getKeyCode() == KeyEvent.VK_SPACE)
                 {
                     ctrl.setState( "jump" );
-                    System.out.println("Space Pressed");
                     startAnimation();
                 }
 
                 if( e.getKeyCode() == KeyEvent.VK_F )
                 {
                     ctrl.setState( "attack" );
-                    System.out.println("Attack Pressed");
+                    startAnimation();
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_Z)
+                {
+                    ctrl.setState( "idle" );
+                    isClimbing = true;
                     startAnimation();
                 }
             }
@@ -99,17 +114,12 @@ public class GamePanel extends JPanel
                     if (e.getKeyCode() == KeyEvent.VK_SHIFT) shiftPressed = false;
 
                     updatePlayerState();
+                } 
+
+                if( e.getKeyCode() == KeyEvent.VK_Z )
+                {
+                    isClimbing = false;
                 }
-
-                if (e.getKeyCode() == KeyEvent.VK_SPACE)
-                {
-                    System.out.println("Space Released");
-                } 
-
-                if (e.getKeyCode() == KeyEvent.VK_F)
-                {
-                    System.out.println("Attack Released");
-                } 
             }
         });
     }
@@ -176,7 +186,7 @@ public class GamePanel extends JPanel
             if( this.ctrl.getState().equals( "run" ) )
             {
                 if( this.rightPressed && this.shiftPressed ) this.x += 15;
-                if( this.leftPressed  && this.shiftPressed ) this.x -= 7;
+                if( this.leftPressed  && this.shiftPressed ) this.x -= 15;
             }
             else if( this.ctrl.getState().equals( "walk" ) )
             {
@@ -193,6 +203,10 @@ public class GamePanel extends JPanel
                 {
                     this.y -= 5;
                 }
+            }
+            else if( this.ctrl.getState().equals( "idle" ) && this.isClimbing )
+            {
+                this.y -= 5;
             }
 
             this.currentFrame++;
@@ -223,6 +237,17 @@ public class GamePanel extends JPanel
             g.drawImage( gameObj.getImg(), gameObj.getX(), gameObj.getY(), gameObj.getWidth(), gameObj.getHeight(), this );
         }
 
+        /*========================*/
+        /* Painting the Platforms */
+        /*========================*/
+        ArrayList<GameObject> lstPlat = this.draw.drawPlatform();
+
+        for( GameObject obj : lstPlat )
+        {
+            GameObject gameObj = obj;
+            g.drawImage( gameObj.getImg(), gameObj.getX(), gameObj.getY(), gameObj.getWidth(), gameObj.getHeight(), this );
+        }
+
         /*====================*/
         /* Painting the decor */
         /*====================*/
@@ -243,10 +268,13 @@ public class GamePanel extends JPanel
             BufferedImage imgMove = this.moveFramesArr[ this.currentFrame ];
             
             /* If the player is out of the window */
-            if( this.x <= 0   ) this.x = 0;   // (left side)
-            if( this.x >= 640 ) this.x = 640; // (right side)
+            if( this.x <= 0    ) this.x = 0;    // (left side)
+            if( this.x >= 1100 ) this.x = 1100; // (right side)
 
-            g.drawImage( imgMove, this.x, this.y, 110, 110, this );
+            if( this.isFacingRight )
+                g.drawImage( imgMove, this.x, this.y, 110, 110, this );
+            else
+                g.drawImage( imgMove, this.x + 110, this.y, -110, 110, this );
         }
     }
 }

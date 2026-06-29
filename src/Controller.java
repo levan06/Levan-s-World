@@ -7,7 +7,7 @@ import src.metier.PlayerMove;
 
 public class Controller
 {
-    private GameFrame ihm;
+    private GameFrame  ihm;
 
     private Player     player;
     private PlayerMove playerMove;
