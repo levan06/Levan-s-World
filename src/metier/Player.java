@@ -15,8 +15,8 @@ public class Player
     public Player( Controller ctrl )
     {
         this.ctrl  = ctrl;
-        this.x     = 50;
-        this.y     = 200;
+        this.x     = 1050;
+        this.y     = 480;
         this.state = "idle";
     }
 
