@@ -4,7 +4,7 @@ A 2D platformer game developed in Java using Swing.
 
 > 🚧 This project is currently under development.
 
-# Game Interface
+## Game Interface
 
 <p align="center">
   <img src="src/images/gamePlay/gamePlay1.png" alt="Home Page" width="900">
