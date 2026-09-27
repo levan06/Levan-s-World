@@ -4,6 +4,18 @@ A 2D platformer game developed in Java using Swing.
 
 > 🚧 This project is currently under development.
 
+# Game Interface
+
+<p align="center">
+  <img src="src/images/gamePlay/gamePlay1.png" alt="Home Page" width="900">
+</p>
+
+---
+
+<p align="center">
+  <img src="src/images/gamePlay/gamePlay2.png" alt="Home Page" width="900">
+</p>
+
 ## Overview
 
 Levan's World is a personal Java project focused on learning game development concepts such as:
